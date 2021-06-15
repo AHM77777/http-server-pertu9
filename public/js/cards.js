@@ -57,6 +57,9 @@ socket.on('requestHandMessage', data => {
     hand: data.text,
     ts: moment(data.createdAt).format('h:mm a')
   });
+  setTimeout(() => {
+    unlockButton($requestHandButton);
+  }, 5000);
 });
 
 socket.on('roomData', ({ room, users, remaining_cards }) => {
@@ -102,14 +105,6 @@ socket.emit('join', { username, room }, error => {
     alert(error);
     location.href = '/';
   }
-});
-
-socket.on('unlockButton', { username }, error => {
-  if (error) {
-    return false;
-  }
-
-  unlockButton($requestHandButton);
 });
 
 const lockButton = button => button.setAttribute('disabled', true);
