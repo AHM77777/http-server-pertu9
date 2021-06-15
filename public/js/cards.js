@@ -104,6 +104,14 @@ socket.emit('join', { username, room }, error => {
   }
 });
 
+socket.on('unlockButton', { username }, error => {
+  if (error) {
+    return false;
+  }
+
+  unlockButton($requestHandButton);
+});
+
 const lockButton = button => button.setAttribute('disabled', true);
 
 const unlockButton = button => button.removeAttribute('disabled', true);

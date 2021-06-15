@@ -93,6 +93,10 @@ io.on('connection', socket => {
         text: `New hand: ${cards}`
       })
     );
+    io.to('main').emit('unlockButton', {
+      username: user.username
+    });
+
     io.to('main').emit('roomData', {
       room: 'main',
       users: getUsersInRoom('main'),
