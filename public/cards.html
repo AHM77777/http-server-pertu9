@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>Cards App</title>
+  <link rel="icon" href="/img/favicon.png" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+  <div class="card">
+    <div id="sidebar" class="card__sidebar">
+
+    </div>
+    <div class="card__main">
+      <div id="card-log" class="card__messages"></div>
+
+      <div class="compose">
+        <form id="card">
+          <input id="message" type="text" name="message" placeholder="Message" required autocomplete="off" />
+          <button id="card-submit" type="submit">Send!</button>
+        </form>
+
+        <button id="request-hand">Request Hand</button>
+      </div>
+    </div>
+  </div>
+</body>
+<footer>
+  <script id="message-template" type="text/html">
+    <p>
+      <span class="message__name">{{ username }}</span>
+      <span class="message__meta">{{ ts }}</span>
+    </p>
+    <p>{{ message }}</p>
+  </script>
+
+  <script id="request-hand-template" type="text/html">
+    <p>
+      <span class="message__name">{{ username }}</span>
+      <span class="message__meta">{{ ts }}</span>
+    </p>
+    <p>{{ hand }}</p>
+  </script>
+
+  <script id="sidebar-template" type="text/html">
+    <h2 class="room-title">{{ room }}</h2>
+    <h3 class="list-title"></h3>
+    <ul class="users">
+      {{ #users }}
+      <li>{{ username }}</li>
+      {{ /users }}
+      <li>Remaining Cards: {{ remaining_cards }}</li>
+    </ul>
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/cards.js"></script>
+</footer>
+
+</html>
