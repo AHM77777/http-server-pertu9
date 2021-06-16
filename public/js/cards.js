@@ -62,7 +62,7 @@ socket.on('requestHandMessage', data => {
   }, 5000);
 });
 
-socket.on('roomData', ({ room, users, remaining_cards }) => {
+socket.on('roomData', ({ room, users, remaining_cards, current_deck }) => {
   const html = Mustache.render(templates.sidebar, {
     room,
     users,
