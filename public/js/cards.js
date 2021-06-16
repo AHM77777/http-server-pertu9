@@ -63,11 +63,20 @@ socket.on('requestHandMessage', data => {
 });
 
 socket.on('roomData', ({ room, users, remaining_cards, current_deck }) => {
+  // Prepare elements for deck_cards
+  const cards = current_deck.map(card => {
+    return (split_card = {
+      number: card.splice(card.length - 1),
+      symbol: card.splice(card.length - 1, 1)
+    });
+  });
+  console.log(cards);
+
   const html = Mustache.render(templates.sidebar, {
     room,
     users,
     remaining_cards,
-    current_deck
+    deck
   });
   document.querySelector('#sidebar').innerHTML = html;
 });
