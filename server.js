@@ -97,7 +97,7 @@ io.on('connection', socket => {
         "<span class='mini " +
         card.slice(-1) +
         "'>" +
-        card.splice(0, -1) +
+        card.slice(0, -1) +
         card.slice(-1) +
         '</span>'
       );
