@@ -7,12 +7,15 @@
 }
 
 .poker-card {
-  height: 35px;
+  height: 57px;
   display: inline-block;
-  background: white;
+  background: #fff;
+  width: 40px;
   border-radius: 2px;
-  padding: 6px 3px 0;
-  color: black;
+  font-size: 20px;
+  padding: 15px 0 0 6px;
+  color: #000;
+  margin-bottom: 7px;
 }
 
 html {
@@ -25,7 +28,7 @@ input {
 
 body {
   line-height: 1.4;
-  color: #333333;
+  color: #333;
   font-family: Helvetica, Arial, sans-serif;
 }
 
