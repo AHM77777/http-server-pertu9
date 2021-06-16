@@ -6,7 +6,7 @@
   box-sizing: border-box;
 }
 
-.card {
+.poker-card {
   height: 35px;
   display: inline-block;
   background: white;
