@@ -22,9 +22,10 @@
   display: inline-block;
   border-radius: 2px;
   padding: 2px;
-  width: 26px;
-  height: 30px;
-  border: 1px solid black;
+  font-size: 12px;
+  width: 28px;
+  height: 26px;
+  border: 1px solid #000;
 }
 
 .poker-card.♦,
