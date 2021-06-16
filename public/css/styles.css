@@ -184,4 +184,5 @@ button:disabled {
 
 .users li {
   padding: 10px;
+  word-break: break-all;
 }
