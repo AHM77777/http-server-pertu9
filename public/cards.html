@@ -52,7 +52,9 @@
       <li>{{ username }}</li>
       {{ /users }}
       <li>Remaining Cards: {{ remaining_cards }}</li>
-      <li>{{ current_deck }}</li>
+      {{ #current_deck }}
+      <li>{{ card }}</li>
+      {{ /current_deck }}
     </ul>
   </script>
 
