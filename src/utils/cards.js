@@ -30,7 +30,10 @@ const refillDeck = () => {
 
 const getRemainingCards = () => deck.length;
 
+const getCurrentDeck = () => deck;
+
 module.exports = {
   dispatchCards,
-  getRemainingCards
+  getRemainingCards,
+  getCurrentDeck
 };

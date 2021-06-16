@@ -12,7 +12,11 @@ const {
   getUser,
   getUsersInRoom
 } = require('./src/utils/users');
-const { dispatchCards, getRemainingCards } = require('./src/utils/cards');
+const {
+  dispatchCards,
+  getRemainingCards,
+  getCurrentDeck
+} = require('./src/utils/cards');
 
 const app = express();
 const server = http.createServer(app);
@@ -56,7 +60,8 @@ io.on('connection', socket => {
     io.to('main').emit('roomData', {
       room: 'main',
       users: getUsersInRoom('main'),
-      remaining_cards: getRemainingCards()
+      remaining_cards: getRemainingCards(),
+      current_deck: getCurrentDeck()
     });
 
     callback();
@@ -96,7 +101,8 @@ io.on('connection', socket => {
     io.to('main').emit('roomData', {
       room: 'main',
       users: getUsersInRoom('main'),
-      remaining_cards: getRemainingCards()
+      remaining_cards: getRemainingCards(),
+      current_deck: getCurrentDeck()
     });
     callback();
   });
@@ -113,7 +119,9 @@ io.on('connection', socket => {
       );
       io.to('main').emit('roomData', {
         room: 'main',
-        users: getUsersInRoom()
+        users: getUsersInRoom(),
+        remaining_cards: getRemainingCards(),
+        current_deck: getCurrentDeck()
       });
     }
   });
