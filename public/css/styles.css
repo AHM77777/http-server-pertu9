@@ -18,6 +18,11 @@
   margin-bottom: 7px;
 }
 
+.poker-card.♦,
+.poker-card.♥ {
+  color: red;
+}
+
 html {
   font-size: 16px;
 }
