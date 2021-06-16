@@ -66,8 +66,8 @@ socket.on('roomData', ({ room, users, remaining_cards, current_deck }) => {
   // Prepare elements for deck_cards
   const cards = current_deck.map(card => {
     return (split_card = {
-      number: card.splice(0, 1),
-      symbol: card.splice(-1)
+      number: card.slice(0, 1),
+      symbol: card.slice(-1)
     });
   });
 
