@@ -48,16 +48,20 @@
     <h2 class="room-title">{{ room }}</h2>
     <h3 class="list-title"></h3>
     <ul class="users">
-      <li><h3>Users:</h3></li>
+      <li>
+        <h3>Users:</h3>
+      </li>
       {{ #users }}
       <li>{{ username }}</li>
       {{ /users }}
-      <li><h3>Remaining Cards:</h3> {{ remaining_cards }}</li>
       <li>
-        {{ #current_deck }}
-          <span class="poker-card {{ . }}"></span>{{ . }}
-        {{ /current_deck }}
-        </li>
+        <h3>Remaining Cards:</h3> {{ remaining_cards }}
+      </li>
+      <li>
+        {{ #cards }}
+        <span class="poker-card {{ .symbol }}"></span>{{ .number .symbol }}
+        {{ /cards }}
+      </li>
     </ul>
   </script>
 
