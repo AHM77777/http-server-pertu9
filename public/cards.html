@@ -58,9 +58,9 @@
         <h3>Remaining Cards:</h3> {{ remaining_cards }}
       </li>
       <li>
-        {{ #each cards }}
+        {{ #cards }}
         <span class="poker-card {{ this.symbol }}"></span>{{ this.number }} {{ this.symbol }}
-        {{ /each }}
+        {{ /cards }}
       </li>
     </ul>
   </script>
