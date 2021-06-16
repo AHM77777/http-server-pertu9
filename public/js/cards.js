@@ -66,7 +66,8 @@ socket.on('roomData', ({ room, users, remaining_cards }) => {
   const html = Mustache.render(templates.sidebar, {
     room,
     users,
-    remaining_cards
+    remaining_cards,
+    current_deck
   });
   document.querySelector('#sidebar').innerHTML = html;
 });
