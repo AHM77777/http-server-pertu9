@@ -98,6 +98,7 @@ io.on('connection', socket => {
         text: `New hand: ${cards}`
       })
     );
+    console.log(getCurrentDeck());
     io.to('main').emit('roomData', {
       room: 'main',
       users: getUsersInRoom('main'),
