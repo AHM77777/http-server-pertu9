@@ -91,11 +91,23 @@ io.on('connection', socket => {
     const cards = dispatchCards();
     updateUserCards(user.id, cards);
 
+    // Prepare hands to show
+    const formatted_cards = cards.map(card => {
+      return (
+        "<span class='mini " +
+        card.slice(-1) +
+        "'>" +
+        card.splice(0, -1) +
+        card.slice(-1) +
+        '</span>'
+      );
+    });
+
     io.to('main').emit(
       'requestHandMessage',
       generateMessage({
         username: user.username,
-        text: `New hand: ${cards}`
+        text: `New hand: ${formatted_cards.join(' ')}`
       })
     );
     io.to('main').emit('roomData', {
