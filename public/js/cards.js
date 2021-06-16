@@ -65,10 +65,10 @@ socket.on('requestHandMessage', data => {
 socket.on('roomData', ({ room, users, remaining_cards, current_deck }) => {
   // Prepare elements for deck_cards
   const cards = current_deck.map(card => {
-    return (split_card = {
+    return {
       number: card.slice(0, 1),
       symbol: card.slice(-1)
-    });
+    };
   });
 
   const html = Mustache.render(templates.sidebar, {
