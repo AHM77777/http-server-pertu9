@@ -62,7 +62,8 @@ io.on('connection', socket => {
     );
     emitGameRoomEvents.updateRoomData({
       users: Users.getUsersInRoom('main'),
-      gamerooms: getGameRooms()
+      gamerooms: getGameRooms(),
+      remaining_cards: getRemainingCards()
     });
 
     callback();
@@ -94,7 +95,7 @@ io.on('connection', socket => {
   });
 
   socket.on('playerEnterLobby', callback => {
-    const user = getUser(socket.id);
+    const user = Users.getUser(socket.id);
 
     if (user.current_room == -1) {
        return callback('You are not in a game');
@@ -107,6 +108,37 @@ io.on('connection', socket => {
         text: `Your current room: <b>${getGameRoom(user.current_gameroom).gameroom_name}</b>`
       })
     );
+
+    // Create hand for user from current deck pile
+    const cards = dispatchCards();
+
+    user.current_hand = cards;
+    Users.updateUser(user);
+
+    // Prepare hands to show
+    const formatted_cards = cards.map(card => {
+      return (
+        "<span class='mini " +
+        card.slice(-1) +
+        "'>" +
+        card.slice(0, -1) +
+        card.slice(-1) +
+        '</span>'
+      );
+    });
+
+    io.emit(
+      'requestHandMessage',
+      generateMessage({
+        username: user.username,
+        text: `New hand: ${formatted_cards.join(' ')}`
+      })
+    );
+    emitGameRoomEvents.updateRoomData({
+      users: Users.getUsersInRoom('main'),
+      gamerooms: getGameRooms(),
+      remaining_cards: getRemainingCards()
+    });
   });
 
   // socket.on('requestHand', () => {
@@ -161,7 +193,8 @@ io.on('connection', socket => {
       if (Users.users.length > 0) {
         emitGameRoomEvents.updateRoomData({
           users: Users.getUsersInRoom('main'),
-          gamerooms: getGameRooms()
+          gamerooms: getGameRooms(),
+          remaining_cards: getRemainingCards()
         });
       }
     }
@@ -170,7 +203,19 @@ io.on('connection', socket => {
 
 /**
  * GAME LOBBY:
- *    1. There will be a button that says:
+ *   - Button will be available to allow the user enter the room (will replace Check Room and reuse all its assets).
+ *   - Once users click this button (only available if they are in a room) a modal window will appear, here they will see:
+ *    ~ A left sidebar with all players currently in the room, each will state relevant information for the game (i.e. amount of cards at hand, current game status, connection).
+ *    ~ 1 Card shown at the center, dragged from the pile at the begining of the match.
+ *    ~ 2 starting cards per player, up to the amouny requested (2 per round at most). They will also be able to see the cards of other players, but only flipped down.
+ *    ~ A timer with the current game time, current player turn and turn time, also the current and remaining rounds will be displayed.
+ *   - Once all 4 players are in a room and they connect to the lobby (they will be autoconnected after 5 seconds), the game will begin. From this point any user that leaves cannot enter the game, and no other user will be able to enter until the game ends (either normally or if all players leave).
+ *      ;; If all but one players leave, he will be declared winner automatically.
+ *   - Starting from the first user in the room, he will be able to do the following:
+ *      ~ REQUEST: If their current hand is not what they want, they will be able to request more cards.
+ *      ~ HOLD: If they are content with their hand, the turn can be skipped.
+ *      ~ WITHDRAW: Forfeit the game. But can stay as spectator.
+ *   
  */
 
 server.listen(port);

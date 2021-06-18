@@ -24,7 +24,7 @@
         </form>
 
         <button id="join-game">Join Game</button>
-        <button id="check-game" disabled>Check Room</button>
+        <button id="check-game" disabled>Enter Lobby</button>
       </div>
     </div>
   </div>
@@ -66,13 +66,14 @@
         <ul class="gameroom-inner-list">
           <li>Room: {{ gameroom_name }}</li>
           <li class="no-list"><i class="fas fa-user-friends"></i>({{ players.length }})</li>
-          <li>
+          <li class="players">
             <ul>
             {{ #players }}
               <li>{{ . }}</li>
             {{ /players }}
             </ul>
           </li>
+          <li><b>Remaining Cards: </b> {{ remaining_cards }}</li>
         </ul>
         {{ /gamerooms }}
       {{ /gamerooms.length }}
