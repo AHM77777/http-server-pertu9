@@ -99,7 +99,7 @@ $chatForm.addEventListener('submit', e => {
   e.preventDefault();
 
   if (!$chatFormInput.value) {
-    return console.log('Please add a message');
+    return alert('Please add a message');
   }
 
   lockButton($chatFormSubmit);
@@ -109,7 +109,7 @@ $chatForm.addEventListener('submit', e => {
     $chatFormInput.focus();
 
     if (error) {
-      return console.log(error);
+      return alert(error);
     }
   });
 });

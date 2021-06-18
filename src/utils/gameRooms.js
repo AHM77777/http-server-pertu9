@@ -71,7 +71,6 @@ const processQueue = () => {
         users.updateUser(user);
         playersQueue.splice(playersQueue.findIndex(play_id => play_id === player), 1);
       }
-      console.log(gameRooms);
 
       processingQueue = false;
       if (playersQueue.length > 0) {

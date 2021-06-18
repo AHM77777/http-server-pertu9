@@ -24,7 +24,7 @@ const {
   emitGameRoomEvents
 } = require('./src/utils/gameRooms')(io, Users);
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 const public_dir_path = path.join(__dirname, '/public');
 
 app.use('/', express.static(public_dir_path));
@@ -163,7 +163,9 @@ io.on('connection', socket => {
         current_deck: getCurrentDeck()
       });
 
-      removePlayerGameRoom(removedUser);
+      if (removedUser.current_gameroom != -1) {
+        removePlayerGameRoom(removedUser);
+      }
     }
   });
 });
