@@ -25,7 +25,7 @@ const {
   emitGameRoomEvents
 } = require('./src/utils/gameRooms')(io, Users);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 const public_dir_path = path.join(__dirname, '/public');
 
 app.use('/', express.static(public_dir_path));
