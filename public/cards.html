@@ -22,7 +22,8 @@
           <button id="card-submit" type="submit">Send!</button>
         </form>
 
-        <button id="request-hand">Request Hand</button>
+        <button id="join-game">Join Game</button>
+        <button id="check-game" disabled>Check Room</button>
       </div>
     </div>
   </div>
@@ -33,7 +34,7 @@
       <span class="message__name">{{ username }}</span>
       <span class="message__meta">{{ ts }}</span>
     </p>
-    <p>{{ message }}</p>
+    <p>{{{ message }}}</p>
   </script>
 
   <script id="request-hand-template" type="text/html">

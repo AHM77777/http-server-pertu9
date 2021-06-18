@@ -4,25 +4,27 @@ const express = require('express');
 const socketio = require('socket.io');
 const Filter = require('bad-words');
 
+const app = express();
+const server = http.createServer(app);
+const io = socketio(server);
+
+const Users = require('./src/entities/Users');
+
 const { generateMessage } = require('./src/utils/messages');
-const {
-  addUser,
-  removeUser,
-  updateUserCards,
-  getUser,
-  getUsersInRoom
-} = require('./src/utils/users');
 const {
   dispatchCards,
   getRemainingCards,
   getCurrentDeck
 } = require('./src/utils/cards');
+const { getUser } = require('./src/entities/Users');
+const {
+  queueGamePlayer,
+  getGameRoom,
+  removePlayerGameRoom,
+  emitGameRoomEvents
+} = require('./src/utils/gameRooms')(io, Users);
 
-const app = express();
-const server = http.createServer(app);
-const io = socketio(server);
-
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 const public_dir_path = path.join(__dirname, '/public');
 
 app.use('/', express.static(public_dir_path));
@@ -31,7 +33,7 @@ io.on('connection', socket => {
   console.log('New Websocket connection');
 
   socket.on('join', (options, callback) => {
-    const { error, user } = addUser({
+    const { error, user } = Users.addUser({
       id: socket.id,
       ...options
     });
@@ -59,7 +61,7 @@ io.on('connection', socket => {
     );
     io.to('main').emit('roomData', {
       room: 'main',
-      users: getUsersInRoom('main'),
+      users: Users.getUsersInRoom('main'),
       remaining_cards: getRemainingCards(),
       current_deck: getCurrentDeck()
     });
@@ -73,7 +75,7 @@ io.on('connection', socket => {
       callback('Profanity is not allowed!');
     }
 
-    const user = getUser(socket.id);
+    const user = Users.getUser(socket.id);
     io.to('main').emit(
       'message',
       generateMessage({
@@ -84,12 +86,38 @@ io.on('connection', socket => {
     callback();
   });
 
-  socket.on('requestHand', (username, callback) => {
+  socket.on('newPlayer', callback => {
+    const { error, result } = queueGamePlayer(socket.id);
+
+    if (error) {
+      return callback(error);
+    }
+  });
+
+  socket.on('playerEnterLobby', callback => {
     const user = getUser(socket.id);
+
+    if (user.current_room == -1) {
+       return callback('You are not in a game');
+    }
+
+    io.to(socket.id).emit(
+      'message',
+      generateMessage({
+        username: 'Admin',
+        text: `Your current room: <b>${getGameRoom(user.current_gameroom).gameroom_name}</b>`
+      })
+    );
+  });
+
+  socket.on('requestHand', () => {
+    const user = Users.getUser(socket.id);
 
     // Create hand for user from current deck pile
     const cards = dispatchCards();
-    updateUserCards(user.id, cards);
+
+    user.current_hand = cards;
+    Users.updateUser(user);
 
     // Prepare hands to show
     const formatted_cards = cards.map(card => {
@@ -103,7 +131,7 @@ io.on('connection', socket => {
       );
     });
 
-    io.to('main').emit(
+    io.emit(
       'requestHandMessage',
       generateMessage({
         username: user.username,
@@ -112,15 +140,14 @@ io.on('connection', socket => {
     );
     io.to('main').emit('roomData', {
       room: 'main',
-      users: getUsersInRoom('main'),
+      users: Users.getUsersInRoom('main'),
       remaining_cards: getRemainingCards(),
       current_deck: getCurrentDeck()
     });
-    callback();
   });
 
   socket.on('disconnect', () => {
-    const removedUser = removeUser(socket.id);
+    const removedUser = Users.removeUser(socket.id);
     if (removedUser) {
       io.to('main').emit(
         'message',
@@ -131,10 +158,12 @@ io.on('connection', socket => {
       );
       io.to('main').emit('roomData', {
         room: 'main',
-        users: getUsersInRoom(),
+        users: Users.getUsersInRoom(),
         remaining_cards: getRemainingCards(),
         current_deck: getCurrentDeck()
       });
+
+      removePlayerGameRoom(removedUser);
     }
   });
 });

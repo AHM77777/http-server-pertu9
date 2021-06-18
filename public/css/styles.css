@@ -35,6 +35,10 @@
   color: red;
 }
 
+.hidden {
+  display: none;
+}
+
 html {
   font-size: 16px;
 }
@@ -187,6 +191,14 @@ button:disabled {
 
 .compose button {
   font-size: 14px;
+}
+
+#join-game {
+  margin-right: 5px;
+}
+
+.game-joined {
+  background-color: #5da557 !important;
 }
 
 /* card Sidebar Styles */

@@ -4,7 +4,9 @@ const socket = io();
 const $chatForm = document.querySelector('#card');
 const $chatFormInput = $chatForm.querySelector('input');
 const $chatFormSubmit = $chatForm.querySelector('button');
-const $requestHandButton = document.querySelector('#request-hand');
+//const $requestHandButton = document.querySelector('#request-hand');
+const $joinGameButton = document.querySelector('#join-game');
+const $checkRoomButton = document.querySelector('#check-game');
 const $messages = document.querySelector('#card-log');
 
 // Templates
@@ -59,7 +61,20 @@ socket.on('requestHandMessage', data => {
   });
   setTimeout(() => {
     unlockButton($requestHandButton);
-  }, 5000);
+  }, 3000);
+});
+
+socket.on('playerProcessed', data => {
+  addMessage(templates.message, {
+    username: data.username,
+    message: data.text,
+    ts: moment(data.createdAt).format('h:m a')
+  });
+
+  $joinGameButton.classList.add('game-joined');
+  $joinGameButton.innerText = 'In Game';
+
+  unlockButton($checkRoomButton);
 });
 
 socket.on('roomData', ({ room, users, remaining_cards, current_deck }) => {
@@ -99,14 +114,31 @@ $chatForm.addEventListener('submit', e => {
   });
 });
 
-$requestHandButton.addEventListener('click', e => {
-  lockButton($requestHandButton);
-  socket.emit('requestHand', { username }, error => {
+$joinGameButton.addEventListener('click', () => {
+  socket.emit('newPlayer', error => {
     if (error) {
-      return console.log(error);
+      alert(error);
     }
   });
+  lockButton($joinGameButton);
 });
+
+$checkRoomButton.addEventListener('click', () => {
+  socket.emit('playerEnterLobby', error => {
+    if (error) {
+      alert(error);
+    }
+  });
+})
+
+// $requestHandButton.addEventListener('click', e => {
+//   lockButton($requestHandButton);
+//   socket.emit('requestHand', error => {
+//     if (error) {
+//       return console.log(error);
+//     }
+//   });
+// });
 
 // Register new user
 socket.emit('join', { username, room }, error => {
