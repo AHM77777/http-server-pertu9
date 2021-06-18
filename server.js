@@ -9,21 +9,16 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 const Users = require('./src/entities/Users');
+const Cards = require('./src/entities/Cards');
 
 const { generateMessage } = require('./src/utils/messages');
-const {
-  dispatchCards,
-  getRemainingCards,
-  getCurrentDeck
-} = require('./src/utils/cards');
-const { getUser } = require('./src/entities/Users');
 const {
   queueGamePlayer,
   getGameRoom,
   getGameRooms,
   removePlayerGameRoom,
   emitGameRoomEvents
-} = require('./src/utils/gameRooms')(io, Users);
+} = require('./src/utils/gameRooms')(io, Users, Cards);
 
 const port = process.env.PORT || 3000;
 const public_dir_path = path.join(__dirname, '/public');
@@ -62,8 +57,7 @@ io.on('connection', socket => {
     );
     emitGameRoomEvents.updateRoomData({
       users: Users.getUsersInRoom('main'),
-      gamerooms: getGameRooms(),
-      remaining_cards: getRemainingCards()
+      gamerooms: getGameRooms()
     });
 
     callback();
@@ -101,6 +95,8 @@ io.on('connection', socket => {
        return callback('You are not in a game');
     }
 
+    console.log(Cards.getDeck(getGameRoom(user.current_gameroom).current_deck));
+
     io.to(socket.id).emit(
       'message',
       generateMessage({
@@ -109,7 +105,7 @@ io.on('connection', socket => {
       })
     );
 
-    // Create hand for user from current deck pile
+ /*    // Create hand for user from current deck pile
     const cards = dispatchCards();
 
     user.current_hand = cards;
@@ -133,11 +129,10 @@ io.on('connection', socket => {
         username: user.username,
         text: `New hand: ${formatted_cards.join(' ')}`
       })
-    );
+    ); */
     emitGameRoomEvents.updateRoomData({
       users: Users.getUsersInRoom('main'),
-      gamerooms: getGameRooms(),
-      remaining_cards: getRemainingCards()
+      gamerooms: getGameRooms()
     });
   });
 
@@ -171,7 +166,8 @@ io.on('connection', socket => {
   //   );
   //   emitGameRoomEvents.updateRoomData({
   //     users: Users.getUsersInRoom('main'),
-  //     gamerooms: getGameRooms()
+  //     gamerooms: getGameRooms(),
+  //     remaining_cards: Cards.getDeck(deck_id).length
   //   });
   // });
 
@@ -193,8 +189,7 @@ io.on('connection', socket => {
       if (Users.users.length > 0) {
         emitGameRoomEvents.updateRoomData({
           users: Users.getUsersInRoom('main'),
-          gamerooms: getGameRooms(),
-          remaining_cards: getRemainingCards()
+          gamerooms: getGameRooms()
         });
       }
     }

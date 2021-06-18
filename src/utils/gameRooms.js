@@ -1,5 +1,6 @@
 let io = null;
 let users = null;
+let cards = null;
 
 playersQueue = [],
 gameRooms = [];
@@ -42,6 +43,7 @@ const processQueue = () => {
           createRoom();
           gameRooms[0].gameroom_name += '0';
           gameRooms[0].players.push(player);
+          gameRooms[0].current_deck = cards.generateDeck();
           user.current_gameroom = 0;
         } else {
           let added = false;
@@ -49,6 +51,7 @@ const processQueue = () => {
           for (let [index, room] of gameRooms.entries()) {
             if (room.players.length < 4) {
               room.players.push(player);
+              room.current_deck = cards.generateDeck();
               user.current_gameroom = index;
               added = true;
 
@@ -63,6 +66,7 @@ const processQueue = () => {
             const currentRoom = gameRooms[gameRooms.length - 1];
             currentRoom.gameroom_name += (gameRooms.length - 1).toString();
             currentRoom.players.push(player);
+            currentRoom.current_deck = cards.generateDeck();
             user.current_gameroom = (gameRooms.length - 1);
           }
         }
@@ -100,9 +104,9 @@ const emitGameRoomEvents = {
       text: 'You were added to a room!'
     });
   },
-  updateRoomData: function(data, room_name = 'main') {
-    io.to(room_name).emit('roomData', {
-      room: room_name,
+  updateRoomData: function(data, room_info = {room_name: 'main', room_event: 'updateMainRoom'}) {
+    io.to(room_info.room_name).emit(room_info.room_event, {
+      room: room_info.room_name,
       ...data
     });
   }
@@ -112,6 +116,7 @@ const createRoom = () => {
   gameRooms.push({
     gameroom_name: 'room_',
     players: [],
+    current_deck: -1,
     in_progress: false
   });
 }
@@ -136,9 +141,10 @@ const getGameRoom = room_id => {
   return gameRooms.find((r, i) => i === room_id);
 }
 
-module.exports = function(importedIo, importedUsers) {
+module.exports = function(importedIo, importedUsers, importedCards) {
   io = importedIo;
   users = importedUsers;
+  cards = importedCards;
 
   return {
     queueGamePlayer,

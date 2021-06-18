@@ -77,14 +77,11 @@ socket.on('playerProcessed', data => {
   unlockButton($checkRoomButton);
 });
 
-socket.on('roomData', ({ room, users, gamerooms, remaining_cards }) => {
-  console.log(users);
-  console.log(gamerooms);
+socket.on('updateMainRoom', ({ room, users, gamerooms }) => {
   const html = Mustache.render(templates.sidebar, {
     room,
     users,
     gamerooms,
-    remaining_cards
   });
   document.querySelector('#sidebar').innerHTML = html;
 });
