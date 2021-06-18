@@ -53,16 +53,16 @@ socket.on('message', data => {
   });
 });
 
-socket.on('requestHandMessage', data => {
-  addMessage(templates.requestHandMessage, {
-    username: data.username,
-    hand: data.text,
-    ts: moment(data.createdAt).format('h:mm a')
-  });
-  setTimeout(() => {
-    unlockButton($requestHandButton);
-  }, 3000);
-});
+// socket.on('requestHandMessage', data => {
+//   addMessage(templates.requestHandMessage, {
+//     username: data.username,
+//     hand: data.text,
+//     ts: moment(data.createdAt).format('h:mm a')
+//   });
+//   setTimeout(() => {
+//     unlockButton($requestHandButton);
+//   }, 3000);
+// });
 
 socket.on('playerProcessed', data => {
   addMessage(templates.message, {
@@ -77,20 +77,13 @@ socket.on('playerProcessed', data => {
   unlockButton($checkRoomButton);
 });
 
-socket.on('roomData', ({ room, users, remaining_cards, current_deck }) => {
-  // Prepare elements for deck_cards
-  const cards = current_deck.map(card => {
-    return {
-      number: card.slice(0, 1),
-      symbol: card.slice(-1)
-    };
-  });
-
+socket.on('roomData', ({ room, users, gamerooms }) => {
+  console.log(users);
+  console.log(gamerooms);
   const html = Mustache.render(templates.sidebar, {
     room,
     users,
-    remaining_cards,
-    cards
+    gamerooms
   });
   document.querySelector('#sidebar').innerHTML = html;
 });

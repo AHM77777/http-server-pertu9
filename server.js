@@ -20,6 +20,7 @@ const { getUser } = require('./src/entities/Users');
 const {
   queueGamePlayer,
   getGameRoom,
+  getGameRooms,
   removePlayerGameRoom,
   emitGameRoomEvents
 } = require('./src/utils/gameRooms')(io, Users);
@@ -59,11 +60,9 @@ io.on('connection', socket => {
         text: `${user.username} has joined!`
       })
     );
-    io.to('main').emit('roomData', {
-      room: 'main',
+    emitGameRoomEvents.updateRoomData({
       users: Users.getUsersInRoom('main'),
-      remaining_cards: getRemainingCards(),
-      current_deck: getCurrentDeck()
+      gamerooms: getGameRooms()
     });
 
     callback();
@@ -110,41 +109,39 @@ io.on('connection', socket => {
     );
   });
 
-  socket.on('requestHand', () => {
-    const user = Users.getUser(socket.id);
+  // socket.on('requestHand', () => {
+  //   const user = Users.getUser(socket.id);
 
-    // Create hand for user from current deck pile
-    const cards = dispatchCards();
+  //   // Create hand for user from current deck pile
+  //   const cards = dispatchCards();
 
-    user.current_hand = cards;
-    Users.updateUser(user);
+  //   user.current_hand = cards;
+  //   Users.updateUser(user);
 
-    // Prepare hands to show
-    const formatted_cards = cards.map(card => {
-      return (
-        "<span class='mini " +
-        card.slice(-1) +
-        "'>" +
-        card.slice(0, -1) +
-        card.slice(-1) +
-        '</span>'
-      );
-    });
+  //   // Prepare hands to show
+  //   const formatted_cards = cards.map(card => {
+  //     return (
+  //       "<span class='mini " +
+  //       card.slice(-1) +
+  //       "'>" +
+  //       card.slice(0, -1) +
+  //       card.slice(-1) +
+  //       '</span>'
+  //     );
+  //   });
 
-    io.emit(
-      'requestHandMessage',
-      generateMessage({
-        username: user.username,
-        text: `New hand: ${formatted_cards.join(' ')}`
-      })
-    );
-    io.to('main').emit('roomData', {
-      room: 'main',
-      users: Users.getUsersInRoom('main'),
-      remaining_cards: getRemainingCards(),
-      current_deck: getCurrentDeck()
-    });
-  });
+  //   io.emit(
+  //     'requestHandMessage',
+  //     generateMessage({
+  //       username: user.username,
+  //       text: `New hand: ${formatted_cards.join(' ')}`
+  //     })
+  //   );
+  //   emitGameRoomEvents.updateRoomData({
+  //     users: Users.getUsersInRoom('main'),
+  //     gamerooms: getGameRooms()
+  //   });
+  // });
 
   socket.on('disconnect', () => {
     const removedUser = Users.removeUser(socket.id);
@@ -156,18 +153,24 @@ io.on('connection', socket => {
           text: `${removedUser.username} has left the chat!`
         })
       );
-      io.to('main').emit('roomData', {
-        room: 'main',
-        users: Users.getUsersInRoom(),
-        remaining_cards: getRemainingCards(),
-        current_deck: getCurrentDeck()
-      });
 
       if (removedUser.current_gameroom != -1) {
         removePlayerGameRoom(removedUser);
       }
+
+      if (Users.users.length > 0) {
+        emitGameRoomEvents.updateRoomData({
+          users: Users.getUsersInRoom('main'),
+          gamerooms: getGameRooms()
+        });
+      }
     }
   });
 });
+
+/**
+ * GAME LOBBY:
+ *    1. There will be a button that says:
+ */
 
 server.listen(port);

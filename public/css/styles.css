@@ -217,13 +217,39 @@ button:disabled {
   padding: 12px 24px 0 24px;
 }
 
-.users {
+.users,
+.gamerooms {
   list-style-type: none;
   font-weight: 300;
   padding: 12px 24px 0 24px;
 }
 
-.users li {
+.users li,
+.gamerooms li {
   padding: 10px;
   word-break: break-all;
+}
+
+ul.gameroom-inner-list {
+  background-color: #454b5d;
+}
+
+ul.gameroom-inner-list i {
+  margin-right: 5px;
+}
+
+ul.gameroom-inner-list li {
+  list-style: none;
+}
+
+ul.gameroom-inner-list li:not(:last-child) {
+  border-bottom: 1px solid #333744;
+}
+
+ul.gameroom-inner-list > li li {
+  background: #6f4eb5 !important;
+  border-radius: 3px;
+  height: 35px;
+  padding: 5px;
+  text-align: center;
 }

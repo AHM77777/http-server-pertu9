@@ -68,6 +68,10 @@ const processQueue = () => {
         }
 
         emitGameRoomEvents.playerAdded(player);
+        emitGameRoomEvents.updateRoomData({
+          users: users.getUsersInRoom('main'),
+          gamerooms: getGameRooms()
+        });
         users.updateUser(user);
         playersQueue.splice(playersQueue.findIndex(play_id => play_id === player), 1);
       }
@@ -95,6 +99,12 @@ const emitGameRoomEvents = {
       username: 'Admin',
       text: 'You were added to a room!'
     });
+  },
+  updateRoomData: function(data, room_name = 'main') {
+    io.to(room_name).emit('roomData', {
+      room: room_name,
+      ...data
+    });
   }
 }
 
@@ -106,7 +116,21 @@ const createRoom = () => {
   });
 }
 
-const getGameRooms = () => gameRooms;
+const getGameRooms = () => {
+  /**
+   * @NOTE: This is the only way I could copy the object to avoid passing it by reference.
+   * Might change it later for a better approach.*/
+  const rooms = JSON.parse(JSON.stringify(gameRooms));
+  /****/
+
+  return rooms.map(room => {
+    room.players = room.players.map(player => {
+      return users.getUser(player).username;
+    });
+
+    return room;
+  });
+}
 
 const getGameRoom = room_id => {
   return gameRooms.find((r, i) => i === room_id);
