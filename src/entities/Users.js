@@ -4,6 +4,7 @@ class Users {
     this.user_schema = {
       id: '',
       username: '',
+      ingame: false,
       current_gameroom: -1,
       current_hand: []
     };

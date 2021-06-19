@@ -1,13 +1,13 @@
 const socket = io();
 
 // Elements
-const $chatForm = document.querySelector('#card');
+const $chatForm = document.querySelector('#chat');
 const $chatFormInput = $chatForm.querySelector('input');
 const $chatFormSubmit = $chatForm.querySelector('button');
 //const $requestHandButton = document.querySelector('#request-hand');
 const $joinGameButton = document.querySelector('#join-game');
 const $checkRoomButton = document.querySelector('#check-game');
-const $messages = document.querySelector('#card-log');
+const $messages = document.querySelector('#chat-log');
 
 // Templates
 const templates = {
@@ -147,3 +147,7 @@ const addMessage = (template, params = {}) => {
   $messages.insertAdjacentHTML('beforeend', Mustache.render(template, params));
   autoScroll();
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  includeHTML();
+});

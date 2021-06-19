@@ -95,7 +95,10 @@ io.on('connection', socket => {
        return callback('You are not in a game');
     }
 
-    console.log(Cards.getDeck(getGameRoom(user.current_gameroom).current_deck));
+    user.ingame = true;
+    Users.updateUser(user);
+
+    console.log(Users.getUser(socket.id));
 
     io.to(socket.id).emit(
       'message',

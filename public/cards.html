@@ -6,28 +6,30 @@
   <title>Cards App</title>
   <link rel="icon" href="/img/favicon.png" />
   <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" integrity="undefined" crossorigin="anonymous" />
 
 </head>
 
 <body>
-  <div class="card">
-    <div id="sidebar" class="card__sidebar">
+  <div class="chat">
+    <div id="sidebar" class="chat__sidebar">
 
     </div>
-    <div class="card__main">
-      <div id="card-log" class="card__messages"></div>
+    <div class="chat__main">
+      <div id="chat-log" class="chat__messages"></div>
 
       <div class="compose">
-        <form id="card">
+        <form id="chat">
           <input id="message" type="text" name="message" placeholder="Message" required autocomplete="off" />
           <button id="card-submit" type="submit">Send!</button>
         </form>
 
         <button id="join-game">Join Game</button>
-        <button id="check-game" disabled>Enter Lobby</button>
+        <button id="check-game" data-bs-toggle="modal" data-bs-target="#game-room" disabled>Enter Lobby</button>
       </div>
     </div>
   </div>
+  <div w3-include-html="/views/modals/lobby.html"></div>
 </body>
 <footer>
   <script id="message-template" type="text/html">
@@ -51,7 +53,7 @@
     <h3 class="list-title"></h3>
     <ul class="users">
       <li>
-        <h5>Users:</h5>
+        <h6>Users:</h6>
       </li>
       {{ #users }}
       <li>{{ username }}</li>
@@ -59,12 +61,12 @@
     </ul>
     <ul class="gamerooms">
       <li>
-        <h5>Gamerooms:</h5>
+        <h6>Gamerooms:</h6>
       </li>
       {{ #gamerooms.length }}
         {{ #gamerooms }}
         <ul class="gameroom-inner-list">
-          <li>Room: {{ gameroom_name }}</li>
+          <li><b>Room:</b> {{ gameroom_name }}</li>
           <li class="no-list"><i class="fas fa-user-friends"></i>({{ players.length }})</li>
           <li class="players">
             <ul>
@@ -85,7 +87,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>
   <script src="https://kit.fontawesome.com/96581f717e.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js" integrity="undefined" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/includeHTML.polyfill.js"></script>
   <script src="/js/cards.js"></script>
 </footer>
 

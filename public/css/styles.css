@@ -6,6 +6,10 @@
   box-sizing: border-box;
 }
 
+ol, ol ol, ol ul, ul, ul ol, ul ul {
+  padding: 0 0;
+}
+
 .poker-card {
   height: 57px;
   display: inline-block;
@@ -116,13 +120,13 @@ button:disabled {
   width: 100%;
 }
 
-/* card Page Layout */
+/* chat Page Layout */
 
-.card {
+.chat {
   display: flex;
 }
 
-.card__sidebar {
+.chat__sidebar {
   height: 100vh;
   color: white;
   background: #333744;
@@ -132,14 +136,14 @@ button:disabled {
 
 /* card styles */
 
-.card__main {
+.chat__main {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   max-height: 100vh;
 }
 
-.card__messages {
+.chat__messages {
   flex-grow: 1;
   padding: 24px 24px 0 24px;
   overflow-y: scroll;
