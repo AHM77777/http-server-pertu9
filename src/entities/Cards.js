@@ -24,7 +24,7 @@ class Cards {
   }
 
   dispatchCards = deck_id => {
-    let deck = getDeck(deck_id);
+    let deck = this.getDeck(deck_id);
 
     if (deck.length < 5) {
       deck = refillDeck(deck);

@@ -257,3 +257,8 @@ ul.gameroom-inner-list > li li {
   padding: 5px;
   text-align: center;
 }
+
+/* Game lobby styles */
+#game-room > div {
+  max-width: 90%
+}

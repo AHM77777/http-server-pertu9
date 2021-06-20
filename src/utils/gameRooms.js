@@ -74,7 +74,7 @@ const processQueue = () => {
         emitGameRoomEvents.playerAdded(player);
         emitGameRoomEvents.updateRoomData({
           users: users.getUsersInRoom('main'),
-          gamerooms: getGameRooms()
+          gamerooms: getGameRoomsList()
         });
         users.updateUser(user);
         playersQueue.splice(playersQueue.findIndex(play_id => play_id === player), 1);
@@ -97,6 +97,21 @@ const removePlayerGameRoom = player => {
   return player;
 }
 
+const getLobbyData = room_id => {
+  const lobby = getGameRoom(room_id);
+  const playersData = getPlayersData(lobby);
+  const gameDeck = cards.getDeck(lobby.current_deck);
+  return {
+    players_data: playersData,
+    remaining_cards: gameDeck.remaining_cards,
+    current_cards: gameDeck.current_cards,
+    player_hands: playersData.map(player => player.current_hand),
+    current_round: lobby.current_round,
+    current_turn: lobby.current_turn,
+    next_turn: lobby.next_turn
+  };
+}
+
 const emitGameRoomEvents = {
   playerAdded: function(user_id) {
     io.to(user_id).emit('playerProcessed',  {
@@ -117,11 +132,14 @@ const createRoom = () => {
     gameroom_name: 'room_',
     players: [],
     current_deck: -1,
+    current_round: -1,
+    current_turn: '',
+    next_turn: '',
     in_progress: false
   });
 }
 
-const getGameRooms = () => {
+const getGameRoomsList = () => {
   /**
    * @NOTE: This is the only way I could copy the object to avoid passing it by reference.
    * Might change it later for a better approach.*/
@@ -129,8 +147,8 @@ const getGameRooms = () => {
   /****/
 
   return rooms.map(room => {
-    room.players = room.players.map(player => {
-      return users.getUser(player).username;
+    room.players = getPlayersData(room).map(player => {
+      return player.username;
     });
 
     return room;
@@ -141,6 +159,12 @@ const getGameRoom = room_id => {
   return gameRooms.find((r, i) => i === room_id);
 }
 
+const getPlayersData = room => {
+  return room.players.map(player => {
+    return users.getUser(player);
+  })
+}
+
 module.exports = function(importedIo, importedUsers, importedCards) {
   io = importedIo;
   users = importedUsers;
@@ -148,9 +172,10 @@ module.exports = function(importedIo, importedUsers, importedCards) {
 
   return {
     queueGamePlayer,
-    getGameRooms,
+    getGameRoomsList,
     getGameRoom,
     removePlayerGameRoom,
+    getLobbyData,
     emitGameRoomEvents
   };
 }

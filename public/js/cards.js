@@ -114,14 +114,6 @@ $joinGameButton.addEventListener('click', () => {
   lockButton($joinGameButton);
 });
 
-$checkRoomButton.addEventListener('click', () => {
-  socket.emit('playerEnterLobby', error => {
-    if (error) {
-      alert(error);
-    }
-  });
-})
-
 // $requestHandButton.addEventListener('click', e => {
 //   lockButton($requestHandButton);
 //   socket.emit('requestHand', error => {
@@ -132,11 +124,24 @@ $checkRoomButton.addEventListener('click', () => {
 // });
 
 // Register new user
-socket.emit('join', { username, room }, error => {
+socket.emit('joinMain', { username, room }, error => {
   if (error) {
     alert(error);
     location.href = '/';
   }
+});
+
+// User open lobby
+$checkRoomButton.addEventListener('click', () => {
+  socket.emit('joinGameRoom', error => {
+    if (error) {
+      alert(error);
+    }
+  });
+});
+
+socket.on('openLobby', lobbyData => {
+  console.log(lobbyData);
 });
 
 const lockButton = button => button.setAttribute('disabled', true);
