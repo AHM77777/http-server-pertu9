@@ -21,7 +21,7 @@ const {
   emitGameRoomEvents
 } = require('./src/utils/gameRooms')(io, Users, Cards);
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 const public_dir_path = path.join(__dirname, '/public');
 
 app.use('/', express.static(public_dir_path));
@@ -87,6 +87,54 @@ io.on('connection', socket => {
     emitGameRoomEvents.updateRoomData({
       users: Users.getUsersInRoom('main'),
       gamerooms: getGameRoomsList()
+    });
+  });
+
+  socket.on('joinTestCards', () => {
+    socket.join('testCards');
+
+    const { error, user } = Users.addUser({
+      id: socket.id,
+      username: 'Test'
+    });
+
+    const waitRoom = new Promise((resolve, reject) => {
+      queueGamePlayer(socket.id);
+
+      const check_hand_given = setInterval(() => {
+        if (user.current_gameroom != -1) {
+          resolve(true);
+          clearInterval(check_hand_given);
+        }
+      }, 1000);
+    });
+
+    waitRoom.then(() => {
+      const game_room = getGameRoom(user.current_gameroom);
+      const deck = Cards.getDeck(game_room.current_deck);
+      const cards = Cards.dispatchCards(game_room.current_deck);
+
+      user.current_hand = cards;
+      Users.updateUser(user);
+    
+      // Prepare hands to show
+      const formatted_table_cards = deck.table_cards.map(card => {
+        return (
+        `<div class="card ${card.slice(-1)}">
+          ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
+         </div>`
+        );
+      });
+  
+      const formatted_hand_cards = cards.map(card => {
+        return (
+          `<div class="card ${card.slice(-1)}">
+            ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
+           </div>`
+          );
+      });
+    
+      io.emit('printCards', { table_cards: formatted_table_cards, hand_cards: formatted_hand_cards});
     });
   });
 

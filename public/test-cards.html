@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>Get cards with your friends in realtime!</title>
+  <link rel="icon" href="/img/favicon.png" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+  <div id="table-cards"></div>
+</body>
+<footer>
+  <script id="cards-template" type="text/html">
+      <div class="cards-container table-cards">
+        {{{ table_cards }}}
+      </div>
+      <div class="cards-container hand-cards">
+        {{{ hand_cards }}}
+      </div>
+  </script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js" integrity="undefined" crossorigin="anonymous"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/includeHTML.polyfill.js"></script>
+  <script src="/js/test-cards.js"></script>
+</footer>
+
+</html>

@@ -104,6 +104,7 @@ const getLobbyData = room_id => {
   return {
     players_data: playersData,
     remaining_cards: gameDeck.remaining_cards,
+    table_cards: gameDeck.table_cards,
     current_cards: gameDeck.current_cards,
     player_hands: playersData.map(player => player.current_hand),
     current_round: lobby.current_round,
