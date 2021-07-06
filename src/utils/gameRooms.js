@@ -104,7 +104,7 @@ const getLobbyData = room_id => {
 
   // Prepare cards for printing
   const table_cards = gameDeck.table_cards.map(card => {
-    return cards.createCard(card.slice(-1), card.slice(0, -1));
+    return cards.createCard(card.slice(-1), card.slice(0, -1), false);
   });
 
   return {
