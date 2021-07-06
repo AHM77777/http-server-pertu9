@@ -10,7 +10,25 @@
         <h5 class="modal-title">{{ room_name }}</h5>
     </div>
     <div class="modal-body">
-        <p>Modal body text goes here.</p>
+        <div id="room-data">
+            <div id="room-players">
+                {{ #players_data }}
+                <!--PRINT PLAYER ICON, PLAYER NAME AND CURRENT STATUS (ONLINE/OFFLINE)-->
+                {{ /players_data }}
+            </div>
+            <div id="room-player-count">Total players: {{ players_data.length }} of 4</div>
+            <div id="room-timer"></div>
+            <div id="room-rounds"></div>
+            <div id="room-turns"></div>
+        </div>
+        <div id="room-table">
+            <div id="cards">
+                {{ #table_cards }}
+                  <div>{{{ . }}}</div>
+                {{ /table_cards }}
+            </div>
+        </div>
+        <div id="room-player-hands"></div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Withdraw</button>

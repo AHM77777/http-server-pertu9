@@ -12,7 +12,7 @@ class Cards {
 
   generateDeck = () => {
     let deck = this.deck_schema;
-  
+
     this.suits.forEach(suit => {
       this.numbers.forEach(face => {
         deck.current_cards.push(face + suit);
@@ -20,7 +20,6 @@ class Cards {
     });
 
     this.decks.push(deck);
-    console.log(this.dispatchCards(this.decks.length - 1));
     deck.table_cards = this.getRandomCards(deck, 5);
 
     return this.decks.length - 1;
@@ -33,7 +32,7 @@ class Cards {
       deck = refillDeck(deck);
       this.decks[deck_id] = deck;
     }
-  
+
     return this.getRandomCards(deck, 2);
   }
 
@@ -43,21 +42,44 @@ class Cards {
     return deck;
   }
 
-  getRandomCards = (deck, amount) => {
-    return new Array(amount)
-    .fill()
-    .map(() => deck.current_cards.splice(parseInt(Math.random() * deck.current_cards.length), 1)[0]);
+  createCard(symbol, number, isFlipped = true) {
+    const isNumber = !isNaN(number) || number === "A";
+    const fixedSize = number === "A" ? 1 : number;
+    return `
+      <div class="card card-${symbol} ${isFlipped ? "flipped" : ""
+      }" number="${number}">
+          <div class="card-front">
+              <div class="card-corner top-left">
+                  <div>${number}</div>
+                  <div>${symbol}</div>
+              </div>
+              <div class="symbols">
+                  ${isNumber
+        ? `${new Array(parseInt(fixedSize))
+          .fill(symbol)
+          .map(
+            (cardSymbol) => `
+                          <div>${cardSymbol}</div>
+                      `
+          )
+          .join("")}`
+        : ""
+      }
+              </div>
+              <div class="card-corner bottom-right">
+                  <div>${symbol}</div>
+                  <div>${number}</div>
+              </div>
+          </div>
+          <div class="card-back">
+          </div>
+      </div>`;
   }
 
-  printCard = (value, suit) => {
-    return `
-    <div class="card__face card__face--back"></div>
-    <div class="card__face card__face--front">
-      <div class="num-box top suit">${value}</div>
-      <div class="num-box bottom suit">${value}</div>
-      <div class="suit main"></div>
-    </div>
-    `;
+  getRandomCards = (deck, amount) => {
+    return new Array(amount)
+      .fill()
+      .map(() => deck.current_cards.splice(parseInt(Math.random() * deck.current_cards.length), 1)[0]);
   }
 
   getDeck = deck_id => this.decks[deck_id];

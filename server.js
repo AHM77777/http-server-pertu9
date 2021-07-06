@@ -1,6 +1,7 @@
 const path = require('path');
 const http = require('http');
 const express = require('express');
+const cors = require('cors');
 const socketio = require('socket.io');
 const Filter = require('bad-words');
 
@@ -21,10 +22,11 @@ const {
   emitGameRoomEvents
 } = require('./src/utils/gameRooms')(io, Users, Cards);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4001;
 const public_dir_path = path.join(__dirname, '/public');
 
 app.use('/', express.static(public_dir_path));
+app.use(cors());
 
 io.on('connection', socket => {
   console.log('New Websocket connection');
@@ -77,12 +79,10 @@ io.on('connection', socket => {
     socket.join(gameRoom.gameroom_name);
 
     // Dispatch cards to player
-    user.current_hand = Cards.dispatchCards(Cards.getDeck(gameRoom.current_deck));
+    user.current_hand = Cards.dispatchCards(gameRoom.current_deck);
     Users.updateUser(user);
 
-    const lobbyData = getLobbyData(user.current_gameroom);
-
-    socket.to(gameRoom.gameroom_name).broadcast.emit('openLobby', { ...lobbyData });
+    io.to(gameRoom.gameroom_name).emit('gameRoom', getLobbyData(user.current_gameroom));
 
     emitGameRoomEvents.updateRoomData({
       users: Users.getUsersInRoom('main'),
@@ -188,4 +188,71 @@ io.on('connection', socket => {
   });
 });
 
+app.get('/get_cards', async (req, res) => {
+  const { error, user } = Users.addUser({
+    id: 'test-id',
+    username: 'Test'
+  });
+
+  const waitRoom = () => {
+    return new Promise(resolve => {
+      /**
+       * WORKOUT WHY THE FUCKING RESPONSE IS GOING BACK SO INCONSISTENTLY
+       */
+      queueGamePlayer('test-id');
+
+      setIn
+  
+      const checkHandGiven = () => {
+        if (!user) {
+          return;
+        }
+
+        if (user.current_gameroom != -1) {
+          resolve();
+        } else {
+          setTimeout(checkHandGiven, 2000);
+        }
+      }
+  
+      setTimeout(checkHandGiven, 2000);
+    });
+  }
+
+  await waitRoom();
+
+  const game_room = getGameRoom(user.current_gameroom);
+  const deck = Cards.getDeck(game_room.current_deck);
+  const cards = Cards.dispatchCards(game_room.current_deck);
+
+  user.current_hand = cards;
+  Users.updateUser(user);
+
+  // Prepare hands to show
+  const formatted_table_cards = deck.table_cards.map(card => {
+    return (
+    `<div class="card ${card.slice(-1)}">
+      ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
+      </div>`
+    );
+  });
+
+  const formatted_hand_cards = cards.map(card => {
+    return (
+      `<div class="card ${card.slice(-1)}">
+        ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
+        </div>`
+      );
+  });
+
+  res.set("Connection", "close");
+  res.json({ table_cards: formatted_table_cards, hand_cards: formatted_hand_cards });
+});
+
 server.listen(port);
+
+/**
+ * IMPLEMENT CARDS GAME:
+ *   1. INCLUDE LOGIC IN SERVER CODE.
+ *   2. ENSURE IT GETS CREATED
+ */

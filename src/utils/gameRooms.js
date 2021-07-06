@@ -3,7 +3,7 @@ let users = null;
 let cards = null;
 
 playersQueue = [],
-gameRooms = [];
+  gameRooms = [];
 
 processingQueue = false;
 
@@ -101,12 +101,17 @@ const getLobbyData = room_id => {
   const lobby = getGameRoom(room_id);
   const playersData = getPlayersData(lobby);
   const gameDeck = cards.getDeck(lobby.current_deck);
+
+  // Prepare cards for printing
+  const table_cards = gameDeck.table_cards.map(card => {
+    return cards.createCard(card.slice(-1), card.slice(0, -1));
+  });
+
   return {
+    room_name: lobby.gameroom_name,
     players_data: playersData,
-    remaining_cards: gameDeck.remaining_cards,
-    table_cards: gameDeck.table_cards,
+    table_cards: table_cards,
     current_cards: gameDeck.current_cards,
-    player_hands: playersData.map(player => player.current_hand),
     current_round: lobby.current_round,
     current_turn: lobby.current_turn,
     next_turn: lobby.next_turn
@@ -114,13 +119,13 @@ const getLobbyData = room_id => {
 }
 
 const emitGameRoomEvents = {
-  playerAdded: function(user_id) {
-    io.to(user_id).emit('playerProcessed',  {
+  playerAdded: function (user_id) {
+    io.to(user_id).emit('playerProcessed', {
       username: 'Admin',
       text: 'You were added to a room!'
     });
   },
-  updateRoomData: function(data, room_info = {room_name: 'main', room_event: 'updateMainRoom'}) {
+  updateRoomData: function (data, room_info = { room_name: 'main', room_event: 'updateMainRoom' }) {
     io.to(room_info.room_name).emit(room_info.room_event, {
       room: room_info.room_name,
       ...data
@@ -166,7 +171,7 @@ const getPlayersData = room => {
   })
 }
 
-module.exports = function(importedIo, importedUsers, importedCards) {
+module.exports = function (importedIo, importedUsers, importedCards) {
   io = importedIo;
   users = importedUsers;
   cards = importedCards;
