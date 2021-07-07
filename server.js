@@ -70,7 +70,7 @@ io.on('connection', socket => {
     const user = Users.getUser(socket.id);
 
     if (user.current_gameroom == -1) {
-       return callback('You are not in a game');
+      return callback('You are not in a game');
     }
 
     user.ingame = true;
@@ -116,25 +116,25 @@ io.on('connection', socket => {
 
       user.current_hand = cards;
       Users.updateUser(user);
-    
+
       // Prepare hands to show
       const formatted_table_cards = deck.table_cards.map(card => {
         return (
-        `<div class="card ${card.slice(-1)}">
+          `<div class="card ${card.slice(-1)}">
           ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
          </div>`
         );
       });
-  
+
       const formatted_hand_cards = cards.map(card => {
         return (
           `<div class="card ${card.slice(-1)}">
             ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
            </div>`
-          );
+        );
       });
-    
-      io.emit('printCards', { table_cards: formatted_table_cards, hand_cards: formatted_hand_cards});
+
+      io.emit('printCards', { table_cards: formatted_table_cards, hand_cards: formatted_hand_cards });
     });
   });
 
@@ -161,6 +161,20 @@ io.on('connection', socket => {
     if (error) {
       return callback(error);
     }
+  });
+
+  socket.on('playerWithdraw', callback => {
+    let user = Users.getUser(socket.id);
+    user = removePlayerGameRoom(user);
+    Users.updateUser(user);
+
+    emitGameRoomEvents.playerRemoved(socket.id);
+    emitGameRoomEvents.updateRoomData({
+      users: Users.getUsersInRoom('main'),
+      gamerooms: getGameRoomsList()
+    });
+
+    callback();
   });
 
   socket.on('disconnect', () => {
@@ -202,7 +216,7 @@ app.get('/get_cards', async (req, res) => {
       queueGamePlayer('test-id');
 
       setIn
-  
+
       const checkHandGiven = () => {
         if (!user) {
           return;
@@ -214,7 +228,7 @@ app.get('/get_cards', async (req, res) => {
           setTimeout(checkHandGiven, 2000);
         }
       }
-  
+
       setTimeout(checkHandGiven, 2000);
     });
   }
@@ -231,7 +245,7 @@ app.get('/get_cards', async (req, res) => {
   // Prepare hands to show
   const formatted_table_cards = deck.table_cards.map(card => {
     return (
-    `<div class="card ${card.slice(-1)}">
+      `<div class="card ${card.slice(-1)}">
       ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
       </div>`
     );
@@ -242,7 +256,7 @@ app.get('/get_cards', async (req, res) => {
       `<div class="card ${card.slice(-1)}">
         ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
         </div>`
-      );
+    );
   });
 
   res.set("Connection", "close");

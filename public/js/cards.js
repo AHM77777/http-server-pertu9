@@ -80,6 +80,20 @@ document.addEventListener('DOMContentLoaded', () => {
     unlockButton($checkRoomButton);
   });
 
+  socket.on('playerRemoved', data => {
+    addMessage(templates.message, {
+      username: data.username,
+      message: data.text,
+      ts: moment(data.createdAt).format('h:m a')
+    });
+
+    $joinGameButton.classList.remove('game-joined');
+    $joinGameButton.innerText = 'Join Game';
+
+    lockButton($checkRoomButton);
+    unlockButton($joinGameButton);
+  });
+
   socket.on('updateMainRoom', ({ room, users, gamerooms }) => {
     const html = Mustache.render(templates.sidebar, {
       room,
@@ -101,6 +115,14 @@ document.addEventListener('DOMContentLoaded', () => {
       el.addEventListener('click', () => {
         el.classList.toggle('flipped');
       });
+    });
+
+    document.querySelector('#withdraw').addEventListener('click', () => {
+      socket.emit('playerWithdraw', error => {
+        if (error) {
+          alert(error);
+        }
+      })
     });
   });
 

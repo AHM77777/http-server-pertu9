@@ -93,6 +93,8 @@ const removePlayerGameRoom = player => {
   room_players.splice(room_players.findIndex(play_id => play_id === player.id), 1);
 
   player.current_gameroom = -1;
+  player.current_hand = [];
+  player.ingame = false;
 
   return player;
 }
@@ -123,6 +125,12 @@ const emitGameRoomEvents = {
     io.to(user_id).emit('playerProcessed', {
       username: 'Admin',
       text: 'You were added to a room!'
+    });
+  },
+  playerRemoved: function (user_id) {
+    io.to(user_id).emit('playerRemoved', {
+      username: 'Admin',
+      text: 'You left the playroom!'
     });
   },
   updateRoomData: function (data, room_info = { room_name: 'main', room_event: 'updateMainRoom' }) {
