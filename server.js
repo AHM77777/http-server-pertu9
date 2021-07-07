@@ -17,6 +17,7 @@ const {
   queueGamePlayer,
   getGameRoom,
   getGameRoomsList,
+  createRoom,
   getLobbyData,
   removePlayerGameRoom,
   emitGameRoomEvents
@@ -90,54 +91,6 @@ io.on('connection', socket => {
     });
   });
 
-  socket.on('joinTestCards', () => {
-    socket.join('testCards');
-
-    const { error, user } = Users.addUser({
-      id: socket.id,
-      username: 'Test'
-    });
-
-    const waitRoom = new Promise((resolve, reject) => {
-      queueGamePlayer(socket.id);
-
-      const check_hand_given = setInterval(() => {
-        if (user.current_gameroom != -1) {
-          resolve(true);
-          clearInterval(check_hand_given);
-        }
-      }, 1000);
-    });
-
-    waitRoom.then(() => {
-      const game_room = getGameRoom(user.current_gameroom);
-      const deck = Cards.getDeck(game_room.current_deck);
-      const cards = Cards.dispatchCards(game_room.current_deck);
-
-      user.current_hand = cards;
-      Users.updateUser(user);
-
-      // Prepare hands to show
-      const formatted_table_cards = deck.table_cards.map(card => {
-        return (
-          `<div class="card ${card.slice(-1)}">
-          ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
-         </div>`
-        );
-      });
-
-      const formatted_hand_cards = cards.map(card => {
-        return (
-          `<div class="card ${card.slice(-1)}">
-            ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
-           </div>`
-        );
-      });
-
-      io.emit('printCards', { table_cards: formatted_table_cards, hand_cards: formatted_hand_cards });
-    });
-  });
-
   socket.on('sendMessage', (message, callback) => {
     const filter = new Filter();
     if (filter.isProfane(message)) {
@@ -202,65 +155,28 @@ io.on('connection', socket => {
   });
 });
 
-app.get('/get_cards', async (req, res) => {
-  const { error, user } = Users.addUser({
-    id: 'test-id',
-    username: 'Test'
-  });
+app.get('/get_table_cards', async (req, res) => {
+  let gameroom = null;
+  if (getGameRoomsList().length < 1) {
+    createRoom();
 
-  const waitRoom = () => {
-    return new Promise(resolve => {
-      /**
-       * WORKOUT WHY THE FUCKING RESPONSE IS GOING BACK SO INCONSISTENTLY
-       */
-      queueGamePlayer('test-id');
-
-      setIn
-
-      const checkHandGiven = () => {
-        if (!user) {
-          return;
-        }
-
-        if (user.current_gameroom != -1) {
-          resolve();
-        } else {
-          setTimeout(checkHandGiven, 2000);
-        }
-      }
-
-      setTimeout(checkHandGiven, 2000);
-    });
+    gameroom = getGameRoom(0);
+    gameroom.gameroom_name += '0';
+    gameroom.current_deck = Cards.generateDeck();
   }
 
-  await waitRoom();
-
-  const game_room = getGameRoom(user.current_gameroom);
-  const deck = Cards.getDeck(game_room.current_deck);
-  const cards = Cards.dispatchCards(game_room.current_deck);
-
-  user.current_hand = cards;
-  Users.updateUser(user);
-
-  // Prepare hands to show
-  const formatted_table_cards = deck.table_cards.map(card => {
-    return (
-      `<div class="card ${card.slice(-1)}">
-      ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
-      </div>`
-    );
-  });
-
-  const formatted_hand_cards = cards.map(card => {
-    return (
-      `<div class="card ${card.slice(-1)}">
-        ${Cards.printCard(card.slice(0, -1), card.slice(-1))}
-        </div>`
-    );
-  });
+  const deck = Cards.getDeck(0);
 
   res.set("Connection", "close");
-  res.json({ table_cards: formatted_table_cards, hand_cards: formatted_hand_cards });
+  res.json({ table_cards: deck.table_cards });
+});
+
+app.get('/get_hand_cards', async (req, res) => {
+  const user_cards = Cards.dispatchCards(0);
+  console.log(user_cards);
+
+  res.set("Connection", "close");
+  res.json({ hand_cards: user_cards });
 });
 
 server.listen(port);

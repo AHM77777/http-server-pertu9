@@ -28,17 +28,23 @@ class Cards {
   dispatchCards = deck_id => {
     let deck = this.getDeck(deck_id);
 
-    if (deck.length < 5) {
-      deck = refillDeck(deck);
+    if (deck.current_cards.length < 4) {
+      deck = this.refillDeck(deck);
       this.decks[deck_id] = deck;
     }
+    console.log(deck)
 
     return this.getRandomCards(deck, 2);
   }
 
   refillDeck = deck => {
-    deck.cards = deck.dropped_cards.concat(deck.cards);
-    deck.dropped_cards = [];
+    this.suits.forEach(suit => {
+      this.numbers.forEach(face => {
+        deck.current_cards.push(face + suit);
+      });
+    });
+    //deck.cards = deck.dropped_cards.concat(deck.cards);
+    //deck.dropped_cards = [];
     return deck;
   }
 

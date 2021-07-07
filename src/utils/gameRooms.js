@@ -188,6 +188,7 @@ module.exports = function (importedIo, importedUsers, importedCards) {
     queueGamePlayer,
     getGameRoomsList,
     getGameRoom,
+    createRoom,
     removePlayerGameRoom,
     getLobbyData,
     emitGameRoomEvents
